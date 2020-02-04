@@ -7,7 +7,7 @@ REPO=$(cd $(dirname $0); pwd)
 COMMIT_SHA=$(git rev-parse --short HEAD)
 ASSETS="false"
 BINARY="false"
-RELEASE=""
+RELEASE="2.5.5"
 
 debugInfo () {
   echo "Repo:           $REPO"
@@ -43,41 +43,22 @@ buildBinary () {
   rice embed-go
 
   cd $REPO
-  go build -a -o filebrowser -ldflags "-s -w -X github.com/filebrowser/filebrowser/v2/version.CommitSHA=$COMMIT_SHA"
+  go build -a -o filebrowser -ldflags "-s -w -X github.com/mobber007/filebrowser/v2/version.CommitSHA=$COMMIT_SHA"
 }
 
 release () {
   cd $REPO
 
-  echo "👀 Checking semver format"
-
-  if [ $# -ne 1 ]; then
-    echo "❌ This release script requires a single argument corresponding to the semver to be released. See semver.org"
-    exit 1
-  fi
-
-  GREP="grep"
-  if [ -x "$(command -v ggrep)" ]; then
-    GREP="ggrep"
-  fi
-
-  semver=$(echo "$1" | $GREP -P '^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)')
-
-  if [ $? -ne 0 ]; then
-    echo "❌ Not valid semver format. See semver.org"
-    exit 1
-  fi
-
   echo "🧼  Tidying up go modules"
   go mod tidy
 
   echo "🐑 Creating a new commit for the new release"
-  git commit --allow-empty -am "chore: version $semver"
+  git commit --allow-empty -am "chore: version 2.5.5"
   git tag "$1"
   git push
   git push --tags origin
 
-  echo "📦 Done! $semver released."
+  echo "📦 Done! 2.5.5 released."
 }
 
 usage() {
